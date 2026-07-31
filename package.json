@@ -2,7 +2,7 @@
   "name": "zefi",
   "version": "0.1.0",
   "private": true,
-  "description": "ZeFi — The AI operating system for onchain finance.",
+  "description": "ZeFi \u2014 The AI operating system for onchain finance.",
   "engines": {
     "node": ">=20.11.0"
   },
@@ -27,9 +27,6 @@
     "db:sql": "prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script",
     "brand:render": "tsx scripts/render-brand.ts",
     "verify": "pnpm lint && pnpm typecheck && pnpm test"
-  },
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.115.0",
@@ -65,6 +62,8 @@
     "zod": "4.4.3"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.4",
+    "@electric-sql/pglite-socket": "^0.2.7",
     "@playwright/test": "1.62.1",
     "@tailwindcss/postcss": "4.3.3",
     "@testing-library/dom": "10.4.1",

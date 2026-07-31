@@ -4,6 +4,12 @@ import { NextResponse, type NextRequest } from 'next/server'
 /**
  * Route protection.
  *
+ * This is Next.js 16's `proxy.ts` convention, which replaces `middleware.ts`.
+ * The distinction matters here: middleware compiled to the Edge runtime, and
+ * Clerk's server SDK reaches for Node built-ins (`#crypto`, `#safe-node-apis`),
+ * so an Edge build fails at deploy time with "referencing unsupported modules".
+ * Proxy always runs on Node.js, so those imports resolve.
+ *
  * The matcher is deliberately narrow: middleware runs **only** on the
  * application area and the mutating API routes. Two consequences, both
  * intentional:
@@ -33,7 +39,7 @@ const protectedMiddleware = clerkMiddleware(async (auth) => {
   await auth.protect()
 })
 
-export default function middleware(
+export default function proxy(
   request: NextRequest,
   event: Parameters<typeof protectedMiddleware>[1],
 ) {
