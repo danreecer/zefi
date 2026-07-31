@@ -231,6 +231,46 @@ curl -sI https://zefi.ae | grep -i strict-transport-security
 curl -s https://zefi.ae/robots.txt
 ```
 
+### When it 404s
+
+Three failures look identical from the browser — a 404 on a route that exists.
+They are told apart by *which* routes fail.
+
+**Every route 404s, but files under `public/` still load.** The project was built
+with the wrong framework preset. Vercel's "Other" preset defaults
+`outputDirectory` to `public/`, so `.next` is discarded and the static folder is
+served on its own. Check it:
+
+```bash
+curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+  "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID" | jq '{framework, buildCommand, outputDirectory}'
+```
+
+`framework` must be `"nextjs"`. Setting it re-routes the build output; no code
+change is involved.
+
+**Only `/app` and friends 404, while marketing routes are fine.** This is
+`auth.protect()` choosing a 404 over a redirect. Left to its default it decides
+between the two by inspecting the request, and it picks 404 whenever it cannot
+resolve the visitor's state — which is exactly what a signed-out browser looks
+like before the auth provider's handshake has run. The response carries the
+reason:
+
+```bash
+curl -sI https://zefi.ae/app | grep -i x-clerk-auth
+# x-clerk-auth-reason: protect-rewrite, dev-browser-missing
+```
+
+`proxy.ts` names the destination explicitly for page requests, so this should not
+recur. API routes keep the default, where redirecting to an HTML sign-in page
+would be the wrong answer to a fetch.
+
+**Nothing changed at all after a push.** Confirm the push actually landed. A
+GitHub deploy key added without *Allow write access* accepts fetches and rejects
+pushes, so `git push` fails locally while the last deployment stays live and
+healthy — nothing in Vercel indicates a problem, because Vercel never heard
+about the commit.
+
 ---
 
 ## 10. Post-deploy checklist
