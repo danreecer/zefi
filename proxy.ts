@@ -33,10 +33,24 @@ const authConfigured = Boolean(
   process.env.CLERK_SECRET_KEY?.trim() && process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.trim(),
 )
 
-const protectedMiddleware = clerkMiddleware(async (auth) => {
+const protectedMiddleware = clerkMiddleware(async (auth, request) => {
   // Every path reaching this middleware is protected by definition — the
   // matcher already excluded everything else.
-  await auth.protect()
+  //
+  // Page requests name their destination explicitly. Left to its default,
+  // `protect()` decides between a redirect and a 404 by inspecting the request,
+  // and it chooses 404 whenever it cannot resolve the visitor's state — which is
+  // what a signed-out browser hitting /app looks like when the auth provider's
+  // handshake has not run. A 404 on a route that plainly exists is a lie to the
+  // user and to crawlers; sending them to sign-in is the honest answer.
+  if (request.nextUrl.pathname.startsWith('/api/')) {
+    await auth.protect()
+    return
+  }
+
+  await auth.protect({
+    unauthenticatedUrl: new URL('/sign-in', request.url).toString(),
+  })
 })
 
 export default function proxy(
