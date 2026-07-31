@@ -38,6 +38,12 @@ const fade = {
   }),
 }
 
+/** Product Hunt's own embed, kept verbatim so the badge stays theirs to serve. */
+const PRODUCT_HUNT_POST =
+  'https://www.producthunt.com/products/zefi-2?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-zefi-2'
+const PRODUCT_HUNT_BADGE =
+  'https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1211798&theme=light&t=1785521644237'
+
 export function Hero() {
   return (
     <section className="relative isolate px-3 pt-3 pb-4 sm:px-5 sm:pt-5 lg:px-7 lg:pt-6">
@@ -112,6 +118,28 @@ export function Hero() {
                 Explore Routefold
               </a>
             </div>
+
+            {/*
+              Product Hunt serves this badge itself so it reflects the current
+              listing, which rules out next/image — routing a third-party badge
+              through the optimiser would freeze it. Width and height are fixed
+              so the hero reserves the space and does not shift when it lands.
+            */}
+            <a
+              href={PRODUCT_HUNT_POST}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="mt-6 inline-block rounded-[10px] transition-opacity duration-500 ease-out-expo hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ember-600"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={PRODUCT_HUNT_BADGE}
+                alt="ZeFi — AI that turns crypto prompts into verified onchain actions | Product Hunt"
+                width={250}
+                height={54}
+                decoding="async"
+              />
+            </a>
           </motion.div>
 
           <motion.div

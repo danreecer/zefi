@@ -10,7 +10,13 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  // Serverless functions open a connection per invocation, so the runtime URL
+  // points at a transaction-mode pooler. Migrations cannot run through one —
+  // they need session state — so they take DIRECT_URL instead. When DIRECT_URL
+  // is unset Prisma falls back to DATABASE_URL, which is right for a plain
+  // Postgres with no pooler in front of it.
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model UserProfile {

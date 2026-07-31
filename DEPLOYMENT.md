@@ -31,9 +31,8 @@ Find the region: Project Settings → Database → Connection string. Or resolve
 ### Apply the schema
 
 ```bash
-DATABASE_URL="$DIRECT_URL" pnpm db:deploy    # session pooler for DDL
-pnpm db:seed                                 # optional: one labelled demo user
-                                             # (explicit — not run by migrate)
+pnpm db:deploy    # picks up DIRECT_URL from the schema's datasource
+pnpm db:seed      # optional: one labelled demo user (explicit — not run by migrate)
 ```
 
 To inspect the SQL without a database:
