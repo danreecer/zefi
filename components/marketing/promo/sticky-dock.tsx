@@ -3,32 +3,18 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowRight, X } from 'lucide-react'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
 
 import { PRODUCT_HUNT } from '@/lib/content/promos'
-import { useDismissable } from './use-promo-state'
 
 /**
  * The bottom dock.
  *
  * Held back until the visitor has scrolled past the hero, because the hero
  * already carries the primary call to action and stacking a second one over it
- * would just cover the product preview. Suppressed while a dialog is open so
- * two things never compete for the same decision.
+ * would just cover the product preview. Visibility is decided by the layer, so
+ * the back-to-top button can know whether it needs to sit above this.
  */
-export function StickyDock({ suppressed }: { suppressed: boolean }) {
-  const [dismissed, dismiss] = useDismissable('dock')
-  const [past, setPast] = useState(false)
-
-  useEffect(() => {
-    const onScroll = () => setPast(window.scrollY > 720)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
-  const visible = past && !dismissed && !suppressed
-
+export function StickyDock({ visible, onDismiss }: { visible: boolean; onDismiss: () => void }) {
   return (
     <AnimatePresence>
       {visible && (
@@ -66,7 +52,7 @@ export function StickyDock({ suppressed }: { suppressed: boolean }) {
 
             <button
               type="button"
-              onClick={dismiss}
+              onClick={onDismiss}
               aria-label="Dismiss"
               className="shrink-0 rounded-full p-1.5 text-ink-soft/60 transition-colors hover:bg-cream hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ember-600"
             >

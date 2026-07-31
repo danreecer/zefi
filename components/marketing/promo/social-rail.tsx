@@ -8,10 +8,14 @@ import { FOUNDER_SOCIAL, PRODUCT_HUNT } from '@/lib/content/promos'
 /**
  * The left rail.
  *
- * Only appears above 1700px, where the hero plate has genuine margin beside it.
- * Below that there is no room that isn't already the page, and a rail floating
- * over content is clutter rather than navigation — the same links live in the
- * footer and the founders section regardless.
+ * Lives in the page gutter rather than over the content. The hero plate is
+ * capped at 96rem and its text starts 69px from the viewport edge at every
+ * width down to 1024px, so a ~48px pill pinned near the edge clears the words
+ * with room to spare. It does float over the plate's translucent border, which
+ * reads as a dock sitting on the glass rather than an overlap.
+ *
+ * Hidden below `lg`, where the gutter closes up. The same links are in the
+ * footer and the founders section, so nothing is only reachable here.
  */
 export function SocialRail() {
   return (
@@ -19,10 +23,10 @@ export function SocialRail() {
       initial={{ opacity: 0, x: -12 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.9, delay: 1.4, ease: [0.16, 1, 0.3, 1] }}
-      className="pointer-events-none fixed top-1/2 left-5 z-30 hidden -translate-y-1/2 min-[1700px]:block"
+      className="pointer-events-none fixed top-1/2 left-1.5 z-30 hidden -translate-y-1/2 lg:block min-[1700px]:left-5"
       aria-label="ZeFi elsewhere"
     >
-      <div className="pointer-events-auto flex flex-col items-center gap-3 rounded-full border border-[rgba(23,19,15,0.09)] bg-white/80 px-2 py-3 shadow-[var(--shadow-panel)] backdrop-blur-md">
+      <div className="pointer-events-auto flex flex-col items-center gap-2.5 rounded-full border border-[rgba(23,19,15,0.09)] bg-white/80 px-1.5 py-3 shadow-[var(--shadow-panel)] backdrop-blur-md">
         <RailLink href={FOUNDER_SOCIAL.href} label={`${FOUNDER_SOCIAL.name} on X`}>
           <Image
             src={FOUNDER_SOCIAL.photo}

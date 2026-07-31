@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react'
 
-import { AnnouncementBar } from '@/components/marketing/promo/announcement-bar'
 import { PromoLayer } from '@/components/marketing/promo/promo-layer'
 import { SiteFooter } from '@/components/marketing/site-footer'
 import { describeCapabilities } from '@/lib/config/env'
@@ -31,7 +30,6 @@ export default function MarketingLayout({ children }: { children: ReactNode }) {
       >
         Skip to content
       </a>
-      <AnnouncementBar />
       <main id="main" className="flex-1">
         {children}
       </main>
