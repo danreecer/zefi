@@ -3,10 +3,12 @@ import 'server-only'
 import { serverEnv } from '@/lib/config/env'
 import type { SimulationResult } from '@/lib/planner/types'
 import { LocalSimulationProvider } from './local'
+import { RpcSimulationProvider } from './rpc'
 import type { SimulationProvider, SimulationRequest } from './types'
 
 export * from './types'
 export { LocalSimulationProvider, compareDecimalStrings } from './local'
+export { RpcSimulationProvider } from './rpc'
 
 /**
  * Simulation provider resolution.
@@ -18,24 +20,28 @@ export { LocalSimulationProvider, compareDecimalStrings } from './local'
 
 const localProvider = new LocalSimulationProvider()
 
-/** Providers this build knows how to construct. */
-const KNOWN_PROVIDERS = new Set<string>([
-  // Add adapters here as they are implemented. The adapter must only set
-  // `deep: true` if it genuinely executes against chain state.
-])
+/**
+ * Providers this build knows how to construct.
+ *
+ * An adapter may only appear here if it genuinely executes against chain state.
+ * `rpc` qualifies: `eth_call` runs the contract's own code at head state.
+ */
+const PROVIDERS: Record<string, () => SimulationProvider> = {
+  rpc: () => new RpcSimulationProvider(),
+}
 
 export function getSimulationProvider(): SimulationProvider {
   const configured = serverEnv.providers.simulation
   if (!configured) return localProvider
 
-  if (!KNOWN_PROVIDERS.has(configured)) {
+  const factory = PROVIDERS[configured]
+  if (!factory) {
     throw new SimulationProviderError(
-      `SIMULATION_PROVIDER is set to “${configured}”, which this build does not implement. Implement an adapter in lib/simulation, or unset the variable to use local validation only.`,
+      `SIMULATION_PROVIDER is set to “${configured}”, which this build does not implement. Known providers: ${Object.keys(PROVIDERS).join(', ')}. Implement an adapter in lib/simulation, or unset the variable to use local validation only.`,
     )
   }
 
-  // No adapters are shipped yet; the guard above makes that explicit.
-  return localProvider
+  return factory()
 }
 
 export class SimulationProviderError extends Error {

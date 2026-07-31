@@ -60,7 +60,7 @@ export function describeSimulation(result: SimulationResult): string {
       return 'Local validation passed. Deep simulation is not configured, so this transaction has not been executed against chain state.'
     case 'passed':
       return result.deepSimulation
-        ? `Executed against forked chain state by ${result.provider}. No revert detected.`
+        ? `Executed against chain state by ${result.provider}. No revert detected.`
         : 'Local validation passed. No deep simulation was performed.'
     case 'warning':
       return result.deepSimulation

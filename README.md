@@ -25,7 +25,8 @@ same company.
 | Native-currency transfers | **Live** | `TRANSACTION_EXECUTION_ENABLED=true` |
 | ERC-20 transfers (registry tokens) | **Live** | `TRANSACTION_EXECUTION_ENABLED=true` |
 | Persistent conversations, plans, history | **Live** | `DATABASE_URL` |
-| Deep simulation against forked state | Provider required | `SIMULATION_PROVIDER` |
+| Deep simulation against live chain state | **Live** | `SIMULATION_PROVIDER=rpc` |
+| Fork traces and full account diffs | Provider required | A vendor adapter |
 | Swap execution | Provider required | `SWAP_PROVIDER` |
 | Bridge execution | Provider required | `BRIDGE_PROVIDER` |
 | USD amounts on volatile assets | Provider required | `PORTFOLIO_PROVIDER` |

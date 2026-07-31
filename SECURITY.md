@@ -112,6 +112,13 @@ Local deterministic validation always runs. Without `SIMULATION_PROVIDER`, ZeFi 
 executed the transaction against chain state — and says so on every plan rather than
 implying coverage it does not have.
 
+`SIMULATION_PROVIDER=rpc` executes it with `eth_call` at head state, which runs the
+token contract's own code and catches a revert before signing. Two limits worth stating:
+it reports whether the transaction reverts *now*, and state can change before the
+transaction lands; and it is not a fork trace, so balance changes shown next to a plan
+remain projections from the plan rather than observed diffs. When the RPC cannot be
+reached the result degrades to `local_only` and says so — it never becomes a pass.
+
 ### Recipient type is not verified offline
 
 ZeFi cannot tell without a network call whether an address is a contract or an

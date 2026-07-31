@@ -98,6 +98,11 @@ RPC_URL_POLYGON=…
 These are server-side only. The `NEXT_PUBLIC_RPC_URL_*` variants are optional overrides
 for the browser; leave them unset and balance reads are proxied through the server.
 
+They matter more once `SIMULATION_PROVIDER=rpc` is set, because every plan then costs an
+`eth_call` and a gas estimate on top of the balance reads. On a public endpoint that is
+what gets rate limited first, and a throttled simulation degrades to `local_only` — safe,
+but it means the deep check silently stops running when you most want it.
+
 ---
 
 ## 5. Wallet connection

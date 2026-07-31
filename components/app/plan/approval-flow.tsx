@@ -4,11 +4,11 @@ import * as Dialog from '@radix-ui/react-dialog'
 import { AlertTriangle, CheckCircle2, ExternalLink, Loader2, PenLine, X } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { parseUnits } from 'viem'
 import { useAccount, useChainId, useSendTransaction, useSwitchChain, useWriteContract } from 'wagmi'
 
 import { ERC20_ABI, explorerTxUrl, findToken, getChain } from '@/lib/chains/registry'
 import { publicConfig } from '@/lib/config/public'
+import { resolveTransfer } from '@/lib/planner/calldata'
 import { isSignable, type TransactionPlan } from '@/lib/planner/types'
 import { createId, truncateAddress } from '@/lib/utils'
 
@@ -64,28 +64,28 @@ export function ApprovalFlow({ plan, planRecordId }: { plan: TransactionPlan; pl
         await switchChainAsync({ chainId: chain.chainId })
       }
 
-      if (!action.recipient) throw new Error('This plan has no recipient address.')
-      if (!action.amount) throw new Error('This plan has no amount.')
-
-      // Amount is re-parsed from the plan's own decimal string using the
-      // registry's decimals. Nothing here comes from model output.
-      const rawAmount = action.amount.replace(/,/g, '')
+      // Resolved by the same function the simulator uses, so the transaction
+      // that was checked is the transaction that gets signed.
+      const resolved = resolveTransfer(plan)
+      if (!resolved.ok) throw new Error(resolved.reason)
+      const { transfer } = resolved
 
       let submittedHash: `0x${string}`
 
-      if (!token || token.kind === 'native') {
-        const decimals = chain.nativeCurrency.decimals
+      if (transfer.kind === 'native_transfer') {
         submittedHash = await sendTransactionAsync({
-          to: action.recipient as `0x${string}`,
-          value: parseUnits(rawAmount, decimals),
+          to: transfer.recipient,
+          value: transfer.value,
         })
       } else {
-        if (!token.address) throw new Error(`${token.symbol} has no contract address in the registry.`)
+        // writeContract rather than raw calldata: wallets show the decoded
+        // transfer, and the ABI here is the same one that produced
+        // `transfer.data`, so the bytes are identical either way.
         submittedHash = await writeContractAsync({
-          address: token.address as `0x${string}`,
+          address: transfer.token!.address,
           abi: ERC20_ABI,
           functionName: 'transfer',
-          args: [action.recipient as `0x${string}`, parseUnits(rawAmount, token.decimals)],
+          args: [transfer.recipient, transfer.amount],
         })
       }
 
