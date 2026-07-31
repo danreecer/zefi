@@ -1,0 +1,239 @@
+// ZeFi — data model
+//
+// Scoping rule: every row a user can reach hangs off UserProfile, and every
+// query in lib/db/repositories filters on the authenticated user's id. Nothing
+// is looked up by primary key alone.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model UserProfile {
+  id          String   @id @default(cuid())
+  clerkUserId String   @unique
+  displayName String?
+  email       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  conversations      Conversation[]
+  walletConnections  WalletConnection[]
+  transactionIntents TransactionIntent[]
+  transactionRecords TransactionRecord[]
+  usageRecords       UsageRecord[]
+  activityEvents     ActivityEvent[]
+
+  @@index([createdAt])
+  @@map("user_profiles")
+}
+
+model Conversation {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String   @default("New conversation")
+  archived  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     UserProfile         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages Message[]
+  intents  TransactionIntent[]
+
+  @@index([userId, updatedAt(sort: Desc)])
+  @@index([userId, archived])
+  @@map("conversations")
+}
+
+enum MessageRole {
+  user
+  assistant
+  system
+}
+
+model Message {
+  id             String      @id @default(cuid())
+  conversationId String
+  role           MessageRole
+  content        String      @db.Text
+
+  /// Parsed intent, plan snapshot, stage trace and notices for this turn.
+  structuredContent Json?
+
+  createdAt DateTime @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
+  @@map("messages")
+}
+
+model WalletConnection {
+  id         String   @id @default(cuid())
+  userId     String
+  /// EIP-55 checksummed. ZeFi stores the address only — never a key or a phrase.
+  address    String
+  chainId    Int
+  label      String?
+  lastSeenAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+
+  user UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, address, chainId])
+  @@index([userId, lastSeenAt(sort: Desc)])
+  @@map("wallet_connections")
+}
+
+enum IntentStatus {
+  parsed
+  needs_information
+  planned
+  abandoned
+}
+
+model TransactionIntent {
+  id             String  @id @default(cuid())
+  userId         String
+  conversationId String?
+
+  intentType String
+
+  /// The validated StructuredIntent object.
+  structuredIntent Json
+
+  confidence Float
+  status     IntentStatus @default(parsed)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user         UserProfile       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversation Conversation?     @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+  plans        TransactionPlan[]
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([conversationId])
+  @@map("transaction_intents")
+}
+
+enum PlanStatus {
+  draft
+  missing_information
+  ready_to_simulate
+  simulating
+  simulation_passed
+  simulation_warning
+  ready_for_signature
+  submitted
+  confirmed
+  failed
+  cancelled
+}
+
+model TransactionPlan {
+  id       String @id @default(cuid())
+  intentId String
+
+  /// Actions, estimates, approvals and data sources.
+  planData Json
+
+  /// Registry resolution results and the missing-field / blocker lists.
+  validationData Json?
+
+  /// SimulationResult, including which provider ran and whether it was deep.
+  simulationData Json?
+
+  /// The RiskFinding list produced by the deterministic risk engine.
+  riskData Json?
+
+  status PlanStatus @default(draft)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  intent  TransactionIntent   @relation(fields: [intentId], references: [id], onDelete: Cascade)
+  records TransactionRecord[]
+
+  @@index([intentId])
+  @@index([status, updatedAt(sort: Desc)])
+  @@map("transaction_plans")
+}
+
+enum TransactionStatus {
+  submitted
+  confirmed
+  failed
+  replaced
+}
+
+model TransactionRecord {
+  id     String @id @default(cuid())
+  userId String
+  planId String
+
+  chainId         Int
+  transactionHash String
+
+  status TransactionStatus @default(submitted)
+
+  /// Client-supplied key that makes a resubmission idempotent.
+  idempotencyKey String
+
+  submittedAt   DateTime  @default(now())
+  confirmedAt   DateTime?
+  blockNumber   BigInt?
+  failureReason String?
+
+  user UserProfile     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan TransactionPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  /// The same hash can never be recorded twice on the same chain.
+  @@unique([chainId, transactionHash])
+  /// Nor can the same submission be replayed under one user's idempotency key.
+  @@unique([userId, idempotencyKey])
+  @@index([userId, submittedAt(sort: Desc)])
+  @@index([planId])
+  @@map("transaction_records")
+}
+
+enum UsageAction {
+  assistant_turn
+  intent_extraction
+  plan_generation
+  simulation
+  wallet_read
+  routefold_analysis
+}
+
+model UsageRecord {
+  id         String      @id @default(cuid())
+  userId     String
+  actionType UsageAction
+  units      Int         @default(1)
+  createdAt  DateTime    @default(now())
+
+  user UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([userId, actionType, createdAt])
+  @@map("usage_records")
+}
+
+model ActivityEvent {
+  id       String @id @default(cuid())
+  userId   String
+  action   String
+  metadata Json?
+
+  createdAt DateTime @default(now())
+
+  user UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@map("activity_events")
+}

@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 190 48" fill="none">
+  <path d="M11 14V34" stroke="#FDFAF4" stroke-width="1.6" stroke-linecap="round" opacity="0.38"/><g stroke="#FDFAF4" stroke-width="2" stroke-linecap="round" opacity="0.5"><path d="M11 14H29"/><path d="M11 34H24"/></g><path d="M11 24H35" stroke="#FDFAF4" stroke-width="3" stroke-linecap="round"/><g fill="#FDFAF4" opacity="0.5"><circle cx="29" cy="14" r="2.2"/><circle cx="24" cy="34" r="2.2"/></g><circle cx="35" cy="24" r="3" fill="#FF9A3D"/>
+  <text x="54" y="31" font-family="Space Grotesk, Inter, Helvetica Neue, Arial, sans-serif" font-size="21" font-weight="500" letter-spacing="-0.4" fill="#FDFAF4">Routefold</text>
+</svg>

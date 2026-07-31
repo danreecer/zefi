@@ -1,0 +1,16 @@
+{
+  // For running server-only modules under `tsx` outside Next.js, e.g.
+  //   pnpm exec tsx --tsconfig tsconfig.scripts.json <script>
+  // The `server-only` package throws on import outside a React Server
+  // Component, so it is aliased to a stub. The real guard still applies in the
+  // Next.js build.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "paths": {
+      "@/*": ["./*"],
+      "server-only": ["./tests/stubs/server-only.ts"]
+    }
+  }
+}
