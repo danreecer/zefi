@@ -2,7 +2,7 @@
   "name": "zefi",
   "version": "0.1.0",
   "private": true,
-  "description": "ZeFi \u2014 The AI operating system for onchain finance.",
+  "description": "ZeFi — The AI operating system for onchain finance.",
   "engines": {
     "node": ">=20.11.0"
   },
@@ -62,8 +62,7 @@
     "zod": "4.4.3"
   },
   "devDependencies": {
-    "@electric-sql/pglite": "^0.5.4",
-    "@electric-sql/pglite-socket": "^0.2.7",
+    "@clerk/testing": "^2.2.16",
     "@playwright/test": "1.62.1",
     "@tailwindcss/postcss": "4.3.3",
     "@testing-library/dom": "10.4.1",
@@ -72,6 +71,7 @@
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.4",
     "@vitejs/plugin-react": "5.2.0",
+    "embedded-postgres": "18.4.0-beta.17",
     "eslint": "9.39.5",
     "eslint-config-next": "16.2.12",
     "jsdom": "30.0.1",

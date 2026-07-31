@@ -1,0 +1,77 @@
+{
+  "generated": "pnpm exec tsx scripts/frame-screenshots.ts",
+  "shots": [
+    {
+      "name": "01-hero",
+      "caption": "Ask crypto anything — plan it, verify it, execute"
+    },
+    {
+      "name": "02-assistant-transaction-plan",
+      "caption": "ZeFi Intelligence — natural language becomes a validated plan"
+    },
+    {
+      "name": "03-risk-register",
+      "caption": "Every plan carries a deterministic risk review"
+    },
+    {
+      "name": "04-dashboard",
+      "caption": "The application — conversations, plans, security state"
+    },
+    {
+      "name": "05-plan-detail",
+      "caption": "A saved transaction plan and its approval flow"
+    },
+    {
+      "name": "06-plan-interface",
+      "caption": "Understand before you sign — the plan interface in full"
+    },
+    {
+      "name": "07-wallet-intelligence",
+      "caption": "Wallet intelligence — your portfolio, in sentences"
+    },
+    {
+      "name": "08-wallet-non-custodial",
+      "caption": "Read-only by construction — ZeFi never holds keys"
+    },
+    {
+      "name": "09-routefold",
+      "caption": "Routefold — model the next chain before you move"
+    },
+    {
+      "name": "10-routefold-product",
+      "caption": "Routefold — a ZeFi company"
+    },
+    {
+      "name": "11-safety-and-control",
+      "caption": "Your wallet remains in control"
+    },
+    {
+      "name": "12-agentic-roadmap",
+      "caption": "Agentic finance, bounded by policy"
+    },
+    {
+      "name": "13-intent-to-execution",
+      "caption": "Six stages between a sentence and a signature"
+    },
+    {
+      "name": "14-intelligence",
+      "caption": "The assistant that knows what it cannot see"
+    },
+    {
+      "name": "15-plans",
+      "caption": "Every plan ZeFi has built, with the status it reached"
+    },
+    {
+      "name": "16-routefold-in-app",
+      "caption": "Routefold, inside the product"
+    },
+    {
+      "name": "17-settings-capabilities",
+      "caption": "Settings — exactly what this deployment can do"
+    },
+    {
+      "name": "18-founder",
+      "caption": "Who is building ZeFi"
+    }
+  ]
+}

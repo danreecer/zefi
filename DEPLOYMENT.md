@@ -173,28 +173,57 @@ requires a redeploy, not just a restart.
 
 ## 9. zefi.ae
 
-In Vercel → Project → **Domains**, add:
+### Pick one primary domain, and point the other at it
 
-- `zefi.ae` (primary)
-- `www.zefi.ae` (redirect to primary)
+This is the step that most often produces a 404 on a healthy deployment. In
+Vercel → Project → **Domains**:
 
-At your DNS provider:
+| Domain | Setting |
+| --- | --- |
+| `zefi.ae` | **Primary** — serves the project |
+| `www.zefi.ae` | Redirect to `zefi.ae` |
+
+Both must be *added to the project*. A domain configured to redirect to a
+hostname that is not itself attached to the project produces
+`x-vercel-error: NOT_FOUND` — the redirect resolves, the target does not.
+
+Diagnose it in one command:
+
+```bash
+curl -sIL https://zefi.ae | grep -iE "^HTTP|^location|x-vercel-error"
+```
+
+- `308` → `location: https://www.zefi.ae/` → `404 NOT_FOUND` means the apex is
+  redirecting to a `www` that is not bound to the project. Swap which one is
+  primary, or add the missing one.
+- `200` on the first hop means you are done.
+
+Whichever you choose must match `NEXT_PUBLIC_APP_URL` exactly, with no trailing
+slash. That value drives canonical URLs, `sitemap.xml`, `robots.txt` and Open
+Graph metadata, so a mismatch means every canonical points at a redirect.
+
+### DNS
+
+Vercel's anycast addresses changed; use whatever the dashboard shows for your
+project rather than a value copied from an older guide.
 
 | Type | Name | Value |
 | --- | --- | --- |
-| `A` | `@` | `76.76.21.21` |
+| `A` | `@` | `216.198.79.1` (Vercel will confirm the current address) |
 | `CNAME` | `www` | `cname.vercel-dns.com` |
 
-Vercel issues the certificate automatically. Then set:
+Simplest alternative: delegate the zone to Vercel's nameservers and let it
+manage both records.
 
-```bash
-NEXT_PUBLIC_APP_URL=https://zefi.ae
-```
+### Deployment Protection
 
-This drives canonical URLs, `sitemap.xml`, `robots.txt` and Open Graph metadata, so it
-must match the domain exactly, without a trailing slash.
+A fresh project has **Vercel Authentication** enabled, which SSO-redirects
+`*.vercel.app` URLs. That is fine for previews, but if you plan to share a
+deployment URL — with a directory, an investor, or a partner — set
+Settings → **Deployment Protection** → Vercel Authentication to *Only Preview
+Deployments*, or the recipient sees a login wall.
 
-Verify:
+### Verify
 
 ```bash
 curl -s https://zefi.ae/api/health | jq
@@ -206,6 +235,7 @@ curl -s https://zefi.ae/robots.txt
 
 ## 10. Post-deploy checklist
 
+- [ ] `curl -sIL https://zefi.ae` returns 200 on the first hop, not a redirect to a 404
 - [ ] `/api/health` reports the capabilities you expect
 - [ ] `/` renders with no console errors
 - [ ] `/app` redirects an anonymous visitor to sign-in

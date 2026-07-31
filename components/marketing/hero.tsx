@@ -124,7 +124,7 @@ export function Hero() {
             <p className="label-tech-sm text-ink-soft">
               Available now — assistant, wallet intelligence, transaction planning, local simulation.
             </p>
-            <p className="mt-2 text-[0.8125rem] leading-relaxed text-ink-muted">
+            <p className="mt-2 text-[0.8125rem] leading-relaxed text-ink-soft">
               Swap and bridge execution are plan-only until a routing provider is connected.{' '}
               <Link href="/how-it-works" className="link-underline text-ink">
                 See what runs today

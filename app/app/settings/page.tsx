@@ -7,7 +7,7 @@ import { requireUser } from '@/lib/auth/session'
 import { getChainById } from '@/lib/chains/registry'
 import { describeCapabilities, serverEnv } from '@/lib/config/env'
 import { listWalletConnections, usageInLastDays } from '@/lib/db/repositories'
-import { formatRelativeTime, truncateAddress } from '@/lib/utils'
+import { cn, formatRelativeTime, truncateAddress } from '@/lib/utils'
 
 export const metadata: Metadata = { title: 'Settings' }
 export const dynamic = 'force-dynamic'
@@ -30,8 +30,11 @@ export default async function SettingsPage() {
         description="Your account, the wallets ZeFi has seen, and exactly what this deployment is configured to do."
       />
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,20rem)] lg:items-start">
-        <div className="space-y-6">
+      <div className="mt-8 grid gap-6">
+        {/* The embedded Clerk panel gets a full-width row of its own. In a
+            narrow column it overflows and clips its right-aligned row actions
+            ("Update profile" reduced to a sliver of its first letter). */}
+        <div className="order-2 space-y-6">
           <section>
             <h2 className="label-tech text-ink-soft">Account</h2>
             <div className="mt-4 overflow-hidden rounded-2xl border border-line bg-white">
@@ -52,7 +55,7 @@ export default async function SettingsPage() {
           </section>
         </div>
 
-        <aside className="space-y-4">
+        <aside className="order-1 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <section className="panel-solid p-5">
             <h2 className="label-tech text-ink-soft">Deployment capabilities</h2>
             <dl className="mt-4 space-y-2.5">
@@ -137,7 +140,14 @@ function Row({ label, value }: { label: string; value: string }) {
     <div className="flex items-center justify-between gap-3">
       <dt className="data-key">{label}</dt>
       <dd>
-        <span className={good ? 'chip chip-positive' : bad ? 'chip chip-caution' : 'chip'}>{value}</span>
+        <span
+          className={cn(
+            'whitespace-nowrap',
+            good ? 'chip chip-positive' : bad ? 'chip chip-caution' : 'chip',
+          )}
+        >
+          {value}
+        </span>
       </dd>
     </div>
   )

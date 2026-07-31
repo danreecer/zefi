@@ -47,7 +47,7 @@ export function IntelligenceSection() {
           }
         />
 
-        <div className="mt-12 grid gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-6">
+        <div className="mt-12 grid items-start gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-6">
           {/* ── Conversation ─────────────────────────────────────────── */}
           <div className="panel-solid overflow-hidden">
             <div className="flex items-center justify-between gap-3 border-b border-line px-5 py-3.5">
