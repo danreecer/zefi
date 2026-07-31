@@ -69,6 +69,9 @@ export const metadata: Metadata = {
     googleBot: { index: true, follow: true, 'max-image-preview': 'large' },
   },
   alternates: { canonical: '/' },
+  // Domain-ownership proof for Orynth. Renders on every route, because a
+  // verifier may fetch any of them.
+  verification: { other: { 'ory-verify': 'orynth-65645874e93b4a938115f4d4dd9b50c9' } },
   category: 'technology',
 }
 
