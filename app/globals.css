@@ -692,6 +692,38 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   CLERK CARD FOOTER
+   ═══════════════════════════════════════════════════════════════════════════
+
+   Hides the "Secured by Clerk" badge and the "Development mode" notice on
+   every Clerk surface — sign-in, sign-up, the UserButton popover and
+   UserProfile — at the owner's explicit instruction.
+
+   Two things the next person should know before touching this.
+
+   Removing Clerk's branding is a paid-plan feature; doing it in CSS is not the
+   supported route. If the account moves to a paid plan, delete these rules and
+   use the dashboard toggle instead.
+
+   The "Development mode" notice is a *symptom*, not the problem. It renders
+   because this deployment uses a `pk_test_` key, and Clerk caps development
+   instances at 100 backend requests per 10 seconds against 1000 for
+   production. Hiding the notice does not raise the cap. Moving to a production
+   instance removes the notice for free and makes the second rule dead code.
+
+   Selectors are chosen to survive a Clerk upgrade: `cl-footerItem` is a stable
+   public class and `data-clerk-dev-mode-notice` is a stable attribute, while
+   the `cl-internal-*` classes around them are content-hashed and change
+   between releases. Matching on the outbound clerk.com link keeps the sibling
+   "Don't have an account?" action visible, which is a real navigation control.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.cl-footerItem:has(a[href*='clerk.com']),
+[data-clerk-dev-mode-notice] {
+  display: none !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    HELPERS
    ═══════════════════════════════════════════════════════════════════════════ */
 
