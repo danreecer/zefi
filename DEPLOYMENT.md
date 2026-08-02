@@ -60,6 +60,27 @@ In Clerk → **Domains**, add `zefi.ae` and complete the DNS records Clerk issue
 production instance. Test keys work on preview deployments; use live keys on the
 production domain.
 
+### The two badges on the sign-in card
+
+Neither is rendered by this codebase — both come from Clerk's own components, so
+there is nothing here to delete. They have different fixes.
+
+**"Development mode"** appears whenever the publishable key is `pk_test_`, which
+means the site is running a Clerk *development* instance. Removing it costs
+nothing: create a production instance, complete its DNS, and swap in
+`pk_live_`/`sk_live_`.
+
+Treat the badge as a warning rather than a blemish. Clerk caps development
+instances at **100 backend requests per 10 seconds**, against **1000** for
+production. This project has already been bitten by that once — a test instance
+rate-limited the whole site with 429s, including `robots.txt`, which is why
+`proxy.ts` has the narrow matcher it does. On launch traffic the cap breaks
+sign-in, and hiding the badge would not raise it.
+
+**"Secured by Clerk"** is Clerk's branding, and removing it is a paid-plan
+feature toggled in their dashboard. Do not hide it with CSS — that is
+circumventing the paywall on a service the product depends on.
+
 ---
 
 ## 3. AI provider
