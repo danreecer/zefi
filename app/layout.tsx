@@ -71,7 +71,7 @@ export const metadata: Metadata = {
   alternates: { canonical: '/' },
   // Domain-ownership proof for Orynth. Renders on every route, because a
   // verifier may fetch any of them.
-  verification: { other: { 'ory-verify': 'orynth-009f3db6a6f6498883baebc11b8768d9' } },
+  verification: { other: { 'ory-verify': 'orynth-158b633ccb8f4d1993da1e7b4d196bd6' } },
   category: 'technology',
 }
 
